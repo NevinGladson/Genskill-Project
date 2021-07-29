@@ -1,0 +1,56 @@
+{% extends "index.html" %}
+
+{% block main %}
+    <p>
+      <form action="{{url_for('todolist.edit_task', id=id)}}" method="POST">
+
+          <div class="mb-3">
+          <label for="task_title" class="form-label">Task:</label>
+          <textarea rows="1" id="task_title" class="form-control"
+                    name="task">
+          {{task}}
+          </textarea>
+          <div class="mb-3">
+          <label class="form-label">Urgency</label><br/>
+          {%for uid, name in statuses %}
+          <div class="form-check-inline">
+            <label class="form-label" for="{{uid}}_{{name}}">{{name}}</label>
+          {%if urgency == uid %}
+          <input id="{{uid}}_{{name}}" type="radio" class="form-check-input" name="urgency" value="{{uid}}" checked>
+          {% else %}
+          <input id="{{uid}}_{{name}}" type="radio" class="form-check-input" name="urgency" value="{{uid}}" >
+          {% endif %}
+          </div>
+          {%endfor%}
+          </div>
+          
+          <div class="mb-3">
+          <label for="start">Start date:</label>
+            <input type="date" id="start" name="date_of_task" value="{{date_of_task}}" min="{{today_date}}" max="2022-12-31">
+          </div>
+
+          <div class="mb-3">
+          <label for="points" class="form-label">Points To Remember</label>
+          <textarea rows="20" id="points" class="form-control"
+                    name="points">
+            {{points}}
+          </textarea>
+          </div>
+          <div class="mb-3">
+           <div class="form-check">
+           {% if status != 1  %}
+           <input class="form-check-label" type="checkbox" id="status" name="status", value="1">
+           {% endif %}
+      <label class="form-check-label" for="status" > Task Complete </label>
+    </div>
+  </div>
+
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+
+      </div>
+      </form>
+    </p>
+
+{% endblock %}

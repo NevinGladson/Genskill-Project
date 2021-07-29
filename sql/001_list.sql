@@ -3,7 +3,6 @@ drop table if exists urgency; --to store urgency rating
 drop table if exists task_status; --to store whether the task is complete or not
 drop table if exists overdue_tasks; --to store the overdue tasks
 drop table if exists user_auth; -- for user authetication
-drop table if exists post; -- for user authentication
 
 create table user_auth (
   id serial primary key,
@@ -11,14 +10,6 @@ create table user_auth (
   password text not null
 );
 
-create table post (
-  id serial primary key,
-  author_id serial not null,
-  created timestamp not null default current_timestamp,
-  title text not null,
-  body text not null,
-  foreign key (author_id) references user_auth (id)
-);
 
 create table task_status (
        id serial primary key,
@@ -38,13 +29,15 @@ create table task(
     day text,
     points text,
     urgency serial references urgency(id),
-    status serial references task_status(id)
+    status serial references task_status(id),
+    user_id serial references user_auth (id)
     );
     
 create table overdue_tasks(
     id serial primary key,
     task text,
-    points text
+    points text,
+    user_id serial references user_auth (id)
     );
     
 

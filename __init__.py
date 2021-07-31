@@ -44,7 +44,7 @@ def create_app(test_config=None):
   def index():
     conn = db.get_db()
     cursor = conn.cursor()
-    cursor.execute(f"insert into overdue_tasks (task, points) select t.task, t.points from task t where t.date_of_task < %s and user_id=%s", (today_date, g.user[0]))
+    cursor.execute(f"insert into overdue_tasks (task, points) select t.task, t.points from task t where t.date_of_task < %s and t.status=2 and user_id=%s", (today_date, g.user[0]))
     cursor.execute(f"delete from task t where t.date_of_task < %s", (today_date, ))
     conn.commit()
     oby = request.args.get("order_by", "date_of_task")  

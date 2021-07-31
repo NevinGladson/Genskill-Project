@@ -102,7 +102,8 @@ def edit_task(id):
         status = request.form.get("status")
         if not status:
           status = '2'
-        cursor.execute("update task set task = %s, date_of_task = %s, status=%s, points=%s, urgency=%s where id=%s and user_id=%s", (task, date_of_task, status, points, urgency, id, g.user[0]))
+        day_of_task = day(date_of_task)  
+        cursor.execute("update task set task = %s, date_of_task = %s, day=%s, status=%s, points=%s, urgency=%s where id=%s and user_id=%s", (task, date_of_task, day_of_task, status, points, urgency, id, g.user[0]))
         conn.commit()
         return redirect(url_for("index"), 302)
 

@@ -1,0 +1,75 @@
+{% extends "index.html" %}
+
+{% block leftsidebar %}
+{% endblock %}
+
+{% block main %}      
+    <p>
+        <form action="{{url_for('todolist.add_tasks')}}" method="POST" onsubmit="return validateForm()">
+            
+            <div class="mb-3">
+                <label for="task_title" class="form-label">Task: <span class="required">*</span></label>
+                <textarea rows="1" id="task_title" class="form-control" name="task" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Urgency: <span class="required">*</span></label><br/>
+                {% for id, name in statuses %}
+                    <div class="form-check-inline">
+                        <label class="form-label" for="{{id}}_{{name}}">{{name}}</label>
+                        <input id="{{id}}_{{name}}" type="radio" class="form-check-input" name="urgency" value="{{id}}" required>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="start">Start date:</label>
+                <input type="date" id="start" name="date_of_task" value="{{today_date}}" min="{{today_date}}" max="2030-12-31">
+            </div>
+            
+            <div class="mb-3">
+                <label for="points" class="form-label">Points To Remember</label>
+                <textarea rows="20" id="points" class="form-control" name="points"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+
+        </form>
+    </p>
+
+    <script>
+        function validateForm() {
+            var taskTitle = document.getElementById('task_title').value;
+            var urgencyOptions = document.querySelectorAll('input[name="urgency"]');
+            
+            // Check if task title is empty
+            if (taskTitle.trim() === '') {
+                alert('Please fill in the Task field.');
+                return false;
+            }
+            
+            // Check if urgency option is selected
+            var urgencySelected = false;
+            urgencyOptions.forEach(function(option) {
+                if (option.checked) {
+                    urgencySelected = true;
+                }
+            });
+
+            if (!urgencySelected) {
+                alert('Please select an Urgency option.');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+{% endblock %}
+
+{% block rightsidebar %}
+{% endblock %}
+
+{% block quote %}
+{% endblock %}

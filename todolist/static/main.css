@@ -1,0 +1,27 @@
+ /*.logout {text-align: right;}*/
+ .display-1 {text-align: center; font-family: Calibri;}
+  body { background-color:#FFFAF0;}
+
+	.options { font-style: italic; }
+	.tableheader {font-family: Helvetica, Arial, sans-serif; font-size: 1.4rem; font-weight: bold; margin: 0 0 0.24em; letter-spacing: 0.1em; position: relative; }
+	
+	.tableheaderlink {font-family: Helvetica, Arial, sans-serif; font-size: 1.4rem; font-weight: bold; color: #000000; margin: 0 0 0.24em; letter-spacing: 0.1em; position: relative; }
+	.tableheaderlink:hover { font-style: italic; }
+			
+	div.blockquote {text-align: center; font-family: Times New Roman; color: #000000; }
+	.blockquote:after, footer a:after { height: 1px; }
+	
+	.task_points { width: 900px; padding: 10px; border-style: solid; margin: 0; }
+	.taskpointsheader {font-family: Brush Script MT, cursive;}
+	.task_header {font-family: Times New Roman, serif;}
+	
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .button-container button {
+        margin-right: 5px; /* Adjust the margin as needed */
+    }
+
+

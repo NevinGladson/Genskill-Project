@@ -3,6 +3,28 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+class User:
+    def __init__(self, id, email, username, password_hash):
+        self.id = id
+        self.email = email
+        self.username = username
+        self.password_hash = password_hash
+
+    # Implement the get_id method
+    def get_id(self):
+        return str(self.id)
+
+    @property
+    def is_authenticated(self):
+        # Customize this method based on your application's logic
+        return True
+
+    @property
+    def is_active(self):
+        # Customize this method based on your application's logic
+        return True
+
+
 
 def get_db():
     if 'db' not in g: 

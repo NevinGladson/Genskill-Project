@@ -1,41 +1,58 @@
-drop table if exists task; -- storing tasks
-drop table if exists urgency; --to store urgency rating
-drop table if exists task_status; --to store whether the task is complete or not
-drop table if exists overdue_tasks; --to store the overdue tasks
+-- Drop existing tables (if any)
+DROP TABLE IF EXISTS app_user CASCADE;
+DROP TABLE IF EXISTS task CASCADE;
+DROP TABLE IF EXISTS urgency CASCADE;
+DROP TABLE IF EXISTS task_status CASCADE;
+DROP TABLE IF EXISTS overdue_tasks CASCADE;
 
+-- Create app_user table
+CREATE TABLE app_user (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+);
 
-create table task_status (
-       id serial primary key,
-       status text
-       );
+-- Create task_status table
+CREATE TABLE task_status (
+    id SERIAL PRIMARY KEY,
+    status TEXT
+);
 
-create table urgency (
-       id serial primary key,
-       urgency text,
-       terminal boolean
-       );  
+-- Create urgency table
+CREATE TABLE urgency (
+    id SERIAL PRIMARY KEY,
+    urgency TEXT,
+    terminal BOOLEAN
+);
 
-create table task(
-    id serial primary key,
-    task text not null,
-    date_of_task date not null,
-    day text,
-    points text,
-    urgency serial references urgency(id),
-    status serial references task_status(id)
-    );
-    
-create table overdue_tasks(
-    id serial primary key,
-    task text,
-    points text
-    );
-    
+-- Create task table with user_id foreign key
+CREATE TABLE task (
+    id SERIAL PRIMARY KEY,
+    task TEXT NOT NULL,
+    date_of_task DATE NOT NULL,
+    day TEXT,
+    points TEXT,
+    urgency_id INTEGER REFERENCES urgency(id),
+    status_id INTEGER REFERENCES task_status(id),
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE
+);
 
-insert into urgency (urgency, terminal) values  ('Very Important', FALSE);
-insert into urgency (urgency, terminal) values  ('Important', FALSE);
-insert into urgency (urgency, terminal) values  ('Normal', FALSE);
-insert into urgency (urgency, terminal) values  ('Expendable', FALSE);
+-- Create overdue_tasks table with user_id foreign key
+CREATE TABLE overdue_tasks (
+    id SERIAL PRIMARY KEY,
+    task TEXT,
+    points TEXT,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE
+);
 
-insert into task_status (status) values  ('Complete');
-insert into task_status (status) values  ('Not Complete');
+-- Insert sample data
+INSERT INTO urgency (urgency, terminal) VALUES ('Very Important', FALSE);
+INSERT INTO urgency (urgency, terminal) VALUES ('Important', FALSE);
+INSERT INTO urgency (urgency, terminal) VALUES ('Normal', FALSE);
+INSERT INTO urgency (urgency, terminal) VALUES ('Expendable', FALSE);
+
+INSERT INTO task_status (status) VALUES ('Completed');
+INSERT INTO task_status (status) VALUES ('Not Complete');
+
+--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

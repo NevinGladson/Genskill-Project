@@ -2,10 +2,10 @@
 
 #Introduction
 
-This repository contains the web app to maintain a list of tasks. It is part of the Genskill fullstack development bootcamp final project.
+This repository contains the web app to maintain a list of tasks. It is part of the Genskill fullstack development bootcamp final project with flask authentication enabled.
 It supports the following features.
 
-1. Multiple user authentication.
+1. Multiple user authentication using Flask authentication.
 2. Add tasks, date, points to remember for the task and the urgency of the task.
 3. All tasks will be displayed on a table. Any task not completed within the given date of task is considered as an overdue task.
 4. Click the task to view details of the task.

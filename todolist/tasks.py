@@ -1,13 +1,19 @@
-from flask import Blueprint
-from flask import render_template, request, redirect, url_for
-from flask import g
-
+from flask import Blueprint, render_template, request, redirect, url_for, g
+from flask_login import current_user
 from datetime import datetime
 
 from . import __init__
 from . import db
 
+
+
 bp = Blueprint("todolist", "todolist", url_prefix="/task")
+
+@bp.before_request
+def before_request():
+    g.user_id = current_user.id if current_user.is_authenticated else None  
+
+#user_id = g.user_id
 
 def day(date_of_task):
   date = datetime.strptime(date_of_task,'%Y-%m-%d')
@@ -22,6 +28,8 @@ def add_tasks():
     conn = db.get_db()
     cursor = conn.cursor()
     
+    g.user_id = current_user.id if current_user.is_authenticated else None
+    user_id = g.user_id
     if request.method == "GET":
         cursor.execute("select id,urgency from urgency")
         statuses = cursor.fetchall()
@@ -34,15 +42,17 @@ def add_tasks():
         points = request.form.get("points")
         status = 2
         day_of_task = day(date_of_task)
-        cursor.execute("insert into task (task, date_of_task, day, points, urgency, status) values (%s,%s,%s,%s,%s,%s)", (task, date_of_task, day_of_task, points, urgency, status))
+        cursor.execute("insert into task (task, date_of_task, day, points, urgency_id, status_id, user_id) values (%s,%s,%s,%s,%s,%s,%s)", (task, date_of_task, day_of_task, points, urgency, status, user_id))
         conn.commit()
         return redirect(url_for("index"), 302)
     
 @bp.route("/<id>/detail")
 def taskdetail(id):
+    g.user_id = current_user.id if current_user.is_authenticated else None
+    user_id = g.user_id
     conn = db.get_db()
     cursor = conn.cursor()
-    cursor.execute("select t.task, t.date_of_task, u.urgency, t.points, ts.status from task t, urgency u, task_status ts where t.id = %s and u.id = t.urgency and t.status=ts.id", (id))
+    cursor.execute("select t.task, t.date_of_task, u.urgency, t.points, ts.status from task t, urgency u, task_status ts where t.id = %s and u.id = t.urgency_id and t.status_id=ts.id and t.user_id=%s", (id, user_id))
     task = cursor.fetchone()
     if not task:
          return render_template("taskdetails.html"), 404 
@@ -69,9 +79,11 @@ def taskdetail(id):
 
 @bp.route("/<id>/edit", methods=["GET", "POST",])
 def edit_task(id): 
+    g.user_id = current_user.id if current_user.is_authenticated else None
+    user_id = g.user_id
     conn = db.get_db()
     cursor = conn.cursor()
-    cursor.execute("select t.task, t.date_of_task, t.urgency, t.status, t.points from task t, urgency u where t.id = %s and u.id = t.urgency", (id,))
+    cursor.execute("select t.task, t.date_of_task, t.urgency_id, t.status_id, t.points from task t, urgency u where t.id = %s and u.id = t.urgency_id and t.user_id = %s", (id, user_id))
     task = cursor.fetchone()
     if not task:
         return render_template("taskdetails.html"), 404    
@@ -98,15 +110,17 @@ def edit_task(id):
         if not status:
           status = '2'
         day_of_task = day(date_of_task)  
-        cursor.execute("update task set task = %s, date_of_task = %s, day=%s, status=%s, points=%s, urgency=%s where id=%s", (task, date_of_task, day_of_task, status, points, urgency, id))
+        cursor.execute("update task set task = %s, date_of_task = %s, day=%s, status_id=%s, points=%s, urgency_id=%s where id=%s and user_id = %s", (task, date_of_task, day_of_task, status, points, urgency, id, user_id))
         conn.commit()
         return redirect(url_for("index"), 302)
 
 @bp.route("/<id>/overdue")
 def overdue(id):
+    g.user_id = current_user.id if current_user.is_authenticated else None
+    user_id = g.user_id
     conn = db.get_db()
     cursor = conn.cursor()
-    cursor.execute("select o.task, o.points from overdue_tasks o where o.id = %s", (id))
+    cursor.execute("select o.task, o.points from overdue_tasks o where o.id = %s and o.user_id", (id, user_id))
     overdue = cursor.fetchone()
     if not overdue:
          return render_template("overdue.html"), 404 
@@ -122,6 +136,8 @@ def overdue(id):
 
 @bp.route('/task/<id>/delete', methods=['GET', 'POST'])
 def delete_task(id):
+    g.user_id = current_user.id if current_user.is_authenticated else None
+    user_id = g.user_id
     conn = db.get_db()
     cursor = conn.cursor()
 
@@ -132,7 +148,7 @@ def delete_task(id):
         return render_template("error.html", message="Invalid task ID"), 400
 
     # Delete the task with the specified ID
-    cursor.execute("DELETE FROM task WHERE id = %s", (task_id,))
+    cursor.execute("DELETE FROM task WHERE id = %s and user_id = %s", (task_id, user_id))
     conn.commit()
 
     # Redirect to the index page after deletion

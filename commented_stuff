@@ -1,0 +1,129 @@
+# @app.route("/sort-tasks", methods=['GET'])
+#   def sort_tasks():
+#     user_id = current_user.id if current_user.is_authenticated else None
+#     if not user_id:
+#         return jsonify({"error": "Unauthorized"}), 401
+
+#     order_by = request.args.get('order_by', 'date_of_task')
+#     order = request.args.get('order', 'asc').lower()
+
+#     # Validate the order_by parameter to ensure it's safe to include in SQL
+#     valid_sort_columns = {'date_of_task', 'urgency_id', 'status_id'}
+#     if order_by not in valid_sort_columns:
+#         order_by = 'date_of_task'  # Default to a safe field
+
+#     # Ensure the order parameter is either 'asc' or 'desc'
+#     if order not in ['asc', 'desc']:
+#         order = 'asc'
+
+#     title = request.args.get('title', None)
+#     startDate = request.args.get('startDate', None)
+#     endDate = request.args.get('endDate', None)
+#     status = request.args.get('status', None)
+#     urgency = request.args.getlist('urgency')
+
+#     conn = db.get_db()  # Assuming db.get_db() is a function to get the database connection
+#     cursor = conn.cursor()
+
+#     query = f"""
+#         SELECT t.id, t.task, t.date_of_task, t.day, u.urgency, ts.status
+#         FROM task t
+#         INNER JOIN urgency u ON t.urgency_id = u.id
+#         INNER JOIN task_status ts ON t.status_id = ts.id
+#         WHERE t.user_id = %s
+#         ORDER BY {order_by} {order}
+#     """
+#     cursor.execute(query, (user_id,))
+#     tasks = cursor.fetchall()
+#     cursor.close()
+#     conn.close()
+
+#     # Convert tasks to a JSON-friendly format
+#     tasks_list = [{
+#         'id': task[0],
+#         'task': task[1],
+#         'date_of_task': task[2].isoformat() if task[2] else None,
+#         'day': task[3],
+#         'urgency': task[4],
+#         'status': task[5]
+#     } for task in tasks]
+
+#     return jsonify(tasks=tasks_list)
+
+#   @app.route("/index")
+#   def index():
+#     user_id = g.user_id = current_user.id if current_user.is_authenticated else None
+#     conn = db.get_db()
+#     cursor = conn.cursor()
+
+#     today_date = datetime.datetime.today().strftime('%Y-%m-%d')  # Ensure you have today's date
+
+#     # Handle overdue tasks
+#     cursor.execute("""
+#     INSERT INTO overdue_tasks (task, date_of_task, day, points, urgency_id, status_id, user_id) 
+#         SELECT task, date_of_task, day, points, urgency_id, status_id, user_id
+#         FROM task 
+#         WHERE date_of_task < %s AND status_id = 2 AND user_id = %s
+# """, (today_date, user_id))
+#     cursor.execute("DELETE FROM task WHERE date_of_task < %s AND user_id = %s", (today_date, user_id))
+#     conn.commit()
+
+#     # Collect filter parameters
+#     title = request.args.get('title')
+#     start_date = request.args.get('start_date')
+#     end_date = request.args.get('end_date')
+#     urgencies = request.args.getlist('urgency')
+#     status = request.args.get('status')  # Retrieve status from query parameters
+
+#     # Fetch current order and determine next order
+#     order_by = request.args.get('order_by', 'date_of_task')
+#     current_order = request.args.get('order', 'asc')
+#     next_order = 'desc' if current_order == 'asc' and order_by == request.args.get('order_by') else 'asc'
+
+#     # Validate the order_by field
+#     valid_sort_columns = {'date_of_task', 'urgency_id', 'status_id'}
+#     if order_by not in valid_sort_columns:
+#         order_by = 'date_of_task'  # Default sorting column
+
+#     # Build query dynamically based on filters
+#     query = """
+#         SELECT t.id, t.task, t.date_of_task, t.day, u.urgency, ts.status 
+#         FROM task t 
+#         INNER JOIN urgency u ON t.urgency_id = u.id 
+#         INNER JOIN task_status ts ON t.status_id = ts.id 
+#         WHERE t.user_id = %s
+#     """
+#     params = [user_id]
+
+#     if title:
+#         query += " AND t.task ILIKE %s"
+#         params.append(f"%{title}%")
+#     if start_date:
+#         query += " AND t.date_of_task >= %s"
+#         params.append(start_date)
+#     if end_date:
+#         query += " AND t.date_of_task <= %s"
+#         params.append(end_date)
+#     if urgencies:
+#         urgency_conditions = " OR ".join(["t.urgency_id = %s" for _ in urgencies])
+#         query += f" AND ({urgency_conditions})"
+#         params.extend(urgencies)
+#     if status:
+#         query += " AND t.status_id = %s"
+#         params.append(status)
+
+#     query += f" ORDER BY {order_by} {current_order}"
+
+#     cursor.execute(query, params)
+#     tasks = cursor.fetchall()
+
+#     cursor.execute("SELECT id, task FROM overdue_tasks WHERE user_id = %s", (user_id,))
+#     overdue = cursor.fetchall()
+
+#     # Pass the next_order for use in the template link
+#     return render_template('index.html', tasks=tasks, overdue=overdue, order=next_order, order_by=order_by,
+#                        filter_title=title, filter_start_date=start_date, filter_end_date=end_date, 
+#                        filter_urgencies=urgencies, filter_status=status)
+
+
+

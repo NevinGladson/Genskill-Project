@@ -1,0 +1,21 @@
+.navbar-end {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-left: 1350px;
+    margin-top: 20px;
+}
+
+.navbar-item {
+    margin-right: 10px;
+    font-size: 22px;
+}
+
+/*div.blurred {
+    filter: blur(5px);
+  }
+*/
+
+
+
+  

@@ -1,0 +1,25 @@
+# Virtual environment
+env3/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Instance folder (if it contains sensitive configuration such as production database credentials, etc.)
+instance/
+
+# Operating system files
+.DS_Store    # For macOS
+Thumbs.db    # For Windows
+
+# IDE and editors
+.vscode/     # For Visual Studio Code settings
+.idea/       # For JetBrains IDEs like PyCharm
+*.swp        # For Vim swap files
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Node modules (if you end up using Node.js in any part of your project)
+node_modules/

@@ -1,0 +1,9 @@
+runtime: python3.10.12  # Specify the Python version you are using
+entrypoint: gunicorn -b :$PORT todolist:app  # Correct usage of $PORT for dynamic port allocation by GAE
+
+env_variables:
+  DATABASE_USER: 'nevin'           # Database username
+  DATABASE_PASSWORD: 'nevin'       # Database password
+  DATABASE_NAME: 'nevin-todolist1' # Database name
+  DATABASE_HOST: '34.30.25.159'     # Public IP of your Google Cloud SQL instance
+  DATABASE_PORT: '5432'            # Standard port for PostgreSQL

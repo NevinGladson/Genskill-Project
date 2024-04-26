@@ -2,6 +2,7 @@ import psycopg2
 import click 
 from flask import current_app, g
 from flask.cli import with_appcontext
+import os
 
 class User:
     def __init__(self, id, email, username, password_hash):
@@ -27,10 +28,18 @@ class User:
 
 
 def get_db():
-    if 'db' not in g: 
-        dbname = current_app.config['DATABASE'] 
-        g.db = psycopg2.connect(f"dbname={dbname}")
+    def get_db():
+     if 'db' not in g:
+        # Use environment variables to configure the database connection
+        dbname = os.getenv('DATABASE_NAME')
+        dbuser = os.getenv('DATABASE_USER')
+        dbpass = os.getenv('DATABASE_PASSWORD')
+        dbhost = os.getenv('DATABASE_HOST', 'localhost')  # Default to localhost if not set
+        dbport = os.getenv('DATABASE_PORT', '5432')      # Default PostgreSQL port is 5432
+        dsn = f"dbname={dbname} user={dbuser} password={dbpass} host={dbhost} port={dbport}"
+        g.db = psycopg2.connect(dsn)
     return g.db
+
 
 def close_db(e=None):
     db = g.pop('db', None)
